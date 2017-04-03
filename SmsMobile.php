@@ -13,7 +13,7 @@ use yii\base\InvalidConfigException;
  * </ul>
  * @author Maurizio Cingolani <mauriziocingolani74@gmail.com>
  * @license http://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
- * @version 1.0.1
+ * @version 1.0.2
  */
 class SmsMobile extends Component {
 
@@ -77,6 +77,39 @@ class SmsMobile extends Component {
             endif;
             case 'KO':
                 throw new Exception(trim(substr($output, 2)));
+        endswitch;
+    }
+
+    public function send($rcpt, $data, $sender = null) {
+        $output = $this->_post('send', [
+            'rcpt' => $rcpt,
+            'data' => $data,
+            'sender' => $sender ? $sender : $this->_sender,
+            'qty' => self::QUALITY_NOTIFY,
+            'operation' => strlen($data) > 160 ? self::OPERATION_MULTITEXT : self::OPERATION_TEXT,
+            'return_id' => 1,
+        ]);
+        switch (substr($output, 0, 2)) :
+            case 'OK':
+                return substr($output, 3); # id del sms
+            case 'KO':
+                throw new Exception(trim(substr($output, 2)));
+        endswitch;
+    }
+
+    public function batchStatus($id) {
+        $output = $this->_post('batch-status', [
+            'id' => $id,
+            'type' => 'notify',
+            'schema' => 1,
+        ]);
+        switch (substr($output, 0, 2)) :
+            case 'KO':
+                throw new Exception(trim(substr($output, 2)));
+            default:
+                $lines = preg_split("/[\r\n]/", $output);
+                $data = preg_split('/[,]/', $lines[1]);
+                return new SmsInfo($data);
         endswitch;
     }
 
