@@ -1,0 +1,25 @@
+{
+    "name": "mauriziocingolani/yii2-fmwk-smsmobile",
+    "description": "Componente basato su Yii2 per l'invio degli SMS da piattaforma SMS-Mobile",
+    "keywords": ["yii2", "framework", "php", "SMS", "component"],
+    "authors": [
+        {
+            "name": "Maurizio Cingolani",
+            "email": "mauriziocingolani74@gmail.com",
+            "homepage": "http://www.mauriziocingolani.it"
+        }
+    ],
+    "type": "library",
+    "license": "BSD-3-Clause",
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.4.0",
+        "yiisoft/yii2": "*",
+        "mauriziocingolani/yii2-fmwk-php": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "mauriziocingolani\\yii2fmwksmsmobile\\": "/"
+        }
+    }
+}
