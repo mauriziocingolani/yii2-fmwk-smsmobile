@@ -1,6 +1,6 @@
 <?php
 
-namespace mauriziocingolani\yii2fmwktelegrambot;
+namespace mauriziocingolani\yii2fmwksmsmobile;
 
 use yii\base\Component;
 use yii\base\Exception;
@@ -13,7 +13,7 @@ use yii\base\InvalidConfigException;
  * </ul>
  * @author Maurizio Cingolani <mauriziocingolani74@gmail.com>
  * @license http://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
- * @version 1.0
+ * @version 1.0.1
  */
 class SmsMobile extends Component {
 
@@ -27,10 +27,19 @@ class SmsMobile extends Component {
     const OPERATION_TEXT = 'TEXT';
     const OPERATION_MULTITEXT = 'MULTITEXT';
 
+    private $_username;
+    private $_password;
+    private $_sender;
     private static $_config;
 
     public function init() {
         parent::init();
+        if (!$this->_username)
+            throw new InvalidConfigException(__CLASS__ . ": param 'username' missing.");
+        if (!$this->_password)
+            throw new InvalidConfigException(__CLASS__ . ": param 'password' missing.");
+        if (!$this->_sender)
+            throw new InvalidConfigException(__CLASS__ . ": param 'sender' missing.");
         self::$_config = array(
             CURLOPT_AUTOREFERER => true,
             CURLOPT_CONNECTTIMEOUT => 30,
@@ -43,6 +52,18 @@ class SmsMobile extends Component {
             CURLOPT_USERAGENT => 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
             CURLOPT_VERBOSE => true,
         );
+    }
+
+    public function setUsername($username) {
+        $this->_username = $username;
+    }
+
+    public function setPassword($password) {
+        $this->_password = $password;
+    }
+
+    public function setSender($sender) {
+        $this->_sender = $sender;
     }
 
     public function credit($mode = self::CREDIT_MODE_CREDIT) {
@@ -63,7 +84,7 @@ class SmsMobile extends Component {
         # options
         $options = self::$_config;
         $options[CURLOPT_POST] = false;
-        $options[CURLOPT_POSTFIELDS] = ['user' => $this->username, 'pass' => $this->password];
+        $options[CURLOPT_POSTFIELDS] = ['user' => $this->_username, 'pass' => $this->_password];
         if ($params && count($params) > 0) :
             foreach ($params as $key => $value) :
                 $options[CURLOPT_POSTFIELDS][$key] = $value;
