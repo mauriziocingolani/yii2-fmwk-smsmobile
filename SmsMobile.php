@@ -113,6 +113,27 @@ class SmsMobile extends Component {
         endswitch;
     }
 
+    public function batchStatusInterval($from, $to, $type = 'notify') {
+        $output = $this->_post('batch-status-interval', [
+            'from' => $from, # formato d/m/Y/H/i
+            'to' => $to, # formato d/m/Y/H/i
+            'type' => $type,
+            'schema' => 1,
+        ]);
+        switch (substr($output, 0, 2)) :
+            case 'KO':
+                throw new Exception(trim(substr($output, 2)));
+            default:
+                $lines = preg_split("/[\r\n]/", $output);
+                $smss = [];
+                foreach (array_slice($lines, 1) as $line) :
+                    $data = preg_split('/[,]/', $line);
+                    $smss[] = new SmsInfo($data);
+                endforeach;
+                return $smss;
+        endswitch;
+    }
+
     private function _post($function, array $params = null) {
         # options
         $options = self::$_config;
